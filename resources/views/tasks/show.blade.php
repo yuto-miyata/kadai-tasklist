@@ -6,12 +6,14 @@
     
     <p>ステータス: {{ $task->status }}</p>
     <p>タスク: {{ $task->content }}</p>
-    
-    {!! link_to_route('tasks.edit', 'このタスクを編集', ['id' => $task->id]) !!}
+     @if (Auth::user()->id == $task->user_id)
+     
+        {!! link_to_route('tasks.edit', 'このタスクを編集', ['id' => $task->id]) !!}
 
-    {!! Form::model($task, ['route' => ['tasks.destroy', $task->id], 'method' => 'delete']) !!}
-        {!! Form::submit('削除', ['class' => 'btn btn-danger']) !!}
-    {!! Form::close() !!}
-        
+   
+        {!! Form::model($task, ['route' => ['tasks.destroy', $task->id], 'method' => 'delete']) !!}
+            {!! Form::submit('削除', ['class' => 'btn btn-danger']) !!}
+        {!! Form::close() !!}
+    @endif    
 
 @endsection
