@@ -13,28 +13,43 @@ class TasksController extends Controller
     
     public function index()
     {
-        $tasks = Task::all();
+        //$data = [];
+        if (\Auth::check()) {
+            
+            $tasks = Task::all();
+            return view('tasks.index', ['tasks' => $tasks,]);
+            
+            /*$user = \Auth::user();
+            $task = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
+
+            $data = [
+                'user' => $user,
+                'tasks' => $tasks,
+            ];
+            $data += $this->counts($user);
+            return view('tasks.show', $data);*/
+        }else {
+            return view('welcome');
+        }
+        //
         
-        return view('tasks.index', ['tasks' => $tasks,]);
+        //
     }
     
     public function show($id)
     {
-        $data = [];
+        //$data = [];
         if (\Auth::check()) {
             $task = Task::find($id);
-            return view('tasks.show', ['task' => $task,]);
-            //$user = \Auth::user();
-            //$tasks = $user->tasks()->orderBy('created_at', 'desc')->paginate(10);
-
-            //$data = [
-            //    'user' => $user,
-            //    'tasks' => $tasks,
-            //];
-            //$data += $this->counts($user);
-            //return view('tasks.show', $data);
+            if (\Auth::user()->id == $task->user_id) {
+                
+                return view('tasks.show', ['task' => $task,]);
+            } else {
+                return redirect('/');
+            }
+            
         }else {
-            return view('/');
+            return redirect('/');
         }
 
         //$task = Task::find($id);
@@ -70,9 +85,21 @@ class TasksController extends Controller
     
     public function edit($id)
     {
-        $task = Task::find($id);
+        if (\Auth::check()) {
+            $task = Task::find($id);
+            if (\Auth::user()->id == $task->user_id) {
+                
+                return view('tasks.edit', ['task' => $task,]);
+            } else {
+                return redirect('/');
+            }
+            
+        }else {
+            return redirect('/');
+        }
+        //$task = Task::find($id);
         
-        return view('tasks.edit', ['task' => $task,]);
+        //return view('tasks.edit', ['task' => $task,]);
     }
     
     public function update(Request $request, $id)
